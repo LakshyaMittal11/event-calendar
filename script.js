@@ -16,9 +16,20 @@ function renderCalendar() {
 
   monthYear.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
   calendar.innerHTML = '';
-
+const today=new Date();
+const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+dayNames.forEach(day=>{
+  const dayLabel=document.createElement('div');
+  dayLabel.textContent=day;
+  dayLabel.className='day-label';
+  
+  calendar.appendChild(dayLabel);
+});
   for (let i = 0; i < firstDay; i++) {
-    calendar.innerHTML += `<div class="day empty"></div>`;
+     const emptyBox = document.createElement('div');
+    emptyBox.className = 'day empty';
+    calendar.appendChild(emptyBox);
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
@@ -29,11 +40,13 @@ function renderCalendar() {
     dayBox.className = 'day';
     dayBox.dataset.date = dateStr;
     dayBox.innerHTML = `<strong>${d}</strong>`;
-
+if(dateStr===todayStr){
+  dayBox.classList.add('today');
+}
     dayEvents.forEach(ev => {
       const el = document.createElement('div');
       el.className = 'event';
-      el.style.backgroundColor = ev.color || '#5bc0de';
+      el.style.backgroundColor = ev.color || 'lightblue';
       el.textContent = ev.title;
       el.onclick = e => {
         e.stopPropagation();
