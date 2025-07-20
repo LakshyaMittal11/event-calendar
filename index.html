@@ -7,28 +7,34 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <div class="calendar-container">
     <div class="calendar-header">
       <button id="prev-month">&lt;</button>
       <h2 id="month-year"></h2>
       <button id="next-month">&gt;</button>
     </div>
+
     <div class="calendar-grid" id="calendar"></div>
   </div>
 
   <div class="modal hidden" id="event-modal">
     <form id="event-form">
-      <h3 id="modal-title">Add Event</h3>
+      <h3 id="modal-title">Add/Edit Event</h3>
+
       <input type="text" id="event-title" placeholder="Event Title" required />
       <input type="datetime-local" id="event-time" required />
-      <textarea id="event-description" placeholder="Description"></textarea>
+      <textarea id="event-description" placeholder="Event Description"></textarea>
+
       <select id="event-repeat">
         <option value="none">No Repeat</option>
         <option value="daily">Daily</option>
         <option value="weekly">Weekly</option>
         <option value="monthly">Monthly</option>
       </select>
-      <input type="color" id="event-color" />
+
+      <input type="color" id="event-color" value="#5bc0de" />
+
       <div class="modal-actions">
         <button type="submit">Save</button>
         <button type="button" id="delete-event">Delete</button>
@@ -36,6 +42,8 @@
       </div>
     </form>
   </div>
+
+  <div id="tooltip" class="tooltip hidden"></div>
 
   <script src="script.js"></script>
 </body>

@@ -1,4 +1,3 @@
-
 const calendar = document.getElementById('calendar');
 const monthYear = document.getElementById('month-year');
 const prevBtn = document.getElementById('prev-month');
@@ -12,10 +11,10 @@ let events = JSON.parse(localStorage.getItem('events')) || [];
 function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  monthYear.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
-  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
 
+  monthYear.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
   calendar.innerHTML = '';
 
   for (let i = 0; i < firstDay; i++) {
@@ -23,28 +22,27 @@ function renderCalendar() {
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
-    const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const dayEvents = events.filter(e => e.date === fullDate);
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const dayEvents = events.filter(e => e.date === dateStr);
 
     const dayBox = document.createElement('div');
     dayBox.className = 'day';
-    if (new Date().toDateString() === new Date(year, month, d).toDateString()) {
-      dayBox.classList.add('today');
-    }
-
-    dayBox.dataset.date = fullDate;
+    dayBox.dataset.date = dateStr;
     dayBox.innerHTML = `<strong>${d}</strong>`;
 
     dayEvents.forEach(ev => {
-      const evEl = document.createElement('div');
-      evEl.className = 'event';
-      evEl.style.backgroundColor = ev.color || '#5bc0de';
-      evEl.textContent = ev.title;
-      evEl.onclick = () => openModal(ev, fullDate);
-      dayBox.appendChild(evEl);
+      const el = document.createElement('div');
+      el.className = 'event';
+      el.style.backgroundColor = ev.color || '#5bc0de';
+      el.textContent = ev.title;
+      el.onclick = e => {
+        e.stopPropagation();
+        openModal(ev, dateStr);
+      };
+      dayBox.appendChild(el);
     });
 
-    dayBox.onclick = () => openModal(null, fullDate);
+    dayBox.onclick = () => openModal(null, dateStr);
     calendar.appendChild(dayBox);
   }
 }
@@ -56,11 +54,10 @@ function openModal(event = null, date) {
   form.dataset.id = event?.id || '';
 
   if (event) {
-    document.getElementById('event-title').value = event.title;
-    document.getElementById('event-time').value = event.time;
-    document.getElementById('event-description').value = event.description;
-    document.getElementById('event-repeat').value = event.repeat || 'none';
-    document.getElementById('event-color').value = event.color || '#5bc0de';
+    form['event-title'].value = event.title;
+    form['event-time'].value = event.time;
+    form['event-description'].value = event.description;
+    form['event-color'].value = event.color || '#5bc0de';
   }
 }
 
@@ -69,15 +66,14 @@ function closeModal() {
   form.reset();
 }
 
-form.onsubmit = function (e) {
+form.onsubmit = e => {
   e.preventDefault();
   const newEvent = {
     id: form.dataset.id || Date.now().toString(),
-    title: document.getElementById('event-title').value,
-    time: document.getElementById('event-time').value,
-    description: document.getElementById('event-description').value,
-    repeat: document.getElementById('event-repeat').value,
-    color: document.getElementById('event-color').value,
+    title: form['event-title'].value,
+    time: form['event-time'].value,
+    description: form['event-description'].value,
+    color: form['event-color'].value,
     date: form.dataset.date
   };
 
