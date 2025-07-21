@@ -34,7 +34,32 @@ dayNames.forEach(day=>{
 
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const dayEvents = events.filter(e => e.date === dateStr);
+   const dayEvents = events.filter(e => {
+  const eventDate = new Date(e.date);
+  const calendarDate = new Date(dateStr);
+
+  if (e.date === dateStr) return true;
+
+  if (e.repeat === 'daily') {
+    return calendarDate >= eventDate;
+  }
+
+  if (e.repeat === 'weekly') {
+    return (
+      calendarDate >= eventDate &&
+      eventDate.getDay() === calendarDate.getDay()
+    );
+  }
+
+  if (e.repeat === 'monthly') {
+    return (
+      calendarDate >= eventDate &&
+      eventDate.getDate() === calendarDate.getDate()
+    );
+  }
+
+  return false;
+});
 
     const dayBox = document.createElement('div');
     dayBox.className = 'day';
@@ -71,6 +96,8 @@ function openModal(event = null, date) {
     form['event-time'].value = event.time;
     form['event-description'].value = event.description;
     form['event-color'].value = event.color || '#5bc0de';
+    form['event-repeat'].value = event.repeat || 'none';
+
   }
 }
 
@@ -89,7 +116,8 @@ form.onsubmit = e => {
     time: time,
     description: form['event-description'].value,
     color: form['event-color'].value,
-    date: date
+    date: date,
+    repeat: form['event-repeat'].value
   };
 
   events = events.filter(e => e.id !== newEvent.id);
@@ -120,15 +148,3 @@ nextBtn.onclick = () => {
 
 renderCalendar();
 
-function showTodayReminders() {
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  const todayEvents = events.filter(e => e.date === todayStr);
-
-  todayEvents.forEach(ev => {
-    alert(`Reminder: ${ev.title} at ${ev.time}\n${ev.description}`);
-  });
-}
-
-renderCalendar();
-showTodayReminders();
