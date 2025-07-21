@@ -81,13 +81,15 @@ function closeModal() {
 
 form.onsubmit = e => {
   e.preventDefault();
+  const timeValue=form['event-time'].value;
+  const[date,time]=timeValue.split('T');
   const newEvent = {
     id: form.dataset.id || Date.now().toString(),
     title: form['event-title'].value,
-    time: form['event-time'].value,
+    time: time,
     description: form['event-description'].value,
     color: form['event-color'].value,
-    date: form.dataset.date
+    date: date
   };
 
   events = events.filter(e => e.id !== newEvent.id);
@@ -117,3 +119,16 @@ nextBtn.onclick = () => {
 };
 
 renderCalendar();
+
+function showTodayReminders() {
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const todayEvents = events.filter(e => e.date === todayStr);
+
+  todayEvents.forEach(ev => {
+    alert(`Reminder: ${ev.title} at ${ev.time}\n${ev.description}`);
+  });
+}
+
+renderCalendar();
+showTodayReminders();
